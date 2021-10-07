@@ -1,25 +1,38 @@
 import CardioModal from './doctors/cardiomodal.js';
 import DentistModal from './doctors/DentistModal.js';
 import TherapistModal from './doctors/TherapistModal.js';
-import createElement from './api/createElement.js'
+import createElement from './api/createElement.js';
 import renderHeader from './api/renderHeader.js';
 import renderBody from './api/renderBody.js';
 import renderCards from './api/renderCards.js';
 import {Cardio,Dentist,Therapist} from './api/renderCards.js';
 import cardsChecker from './api/cardsChecker.js';
+import createInput from './api/input.js'; 
+import createInputfrom from './api/input.js';
+let logOutBtn = createElement({tagName: 'button',text: 'Выйти из системы',className: 'logout-btn',})
+logOutBtn.addEventListener('click', function() {
+  window.location.reload()
+  localStorage.clear()
+
+})
 window.addEventListener('load', function() {
   let pleaseLogin = document.createElement('h2')
     pleaseLogin.textContent = 'Пожалуйста войдите в систему'
     pleaseLogin.classList.add('please-login')
-  if (localStorage.getItem('token')) {
- 
-    document.querySelector('.header').append(createVisitBtn)
+  if (localStorage.getItem('token') ) {
+   
+    document.querySelector('.header').append(logOutBtn,createVisitBtn)
     document.querySelector('.login-btn').remove()
     pleaseLogin.remove()
+    createInput()
     renderCards()
 cardsChecker()
-  } 
+  }
+  
   else {
+    if(document.querySelector('logout-btn')){
+      document.querySelector('logout-btn').remove()
+    }
     document.querySelector('.header').append(loginBtn)
     
     document.querySelector('.body-container').append(pleaseLogin)
@@ -87,13 +100,20 @@ loginBtn.addEventListener('click', function(){
       })
         .then(response => response.text())
         .then(token => {
+          if (token !== 'Incorrect username or password'){
             localStorage.setItem('token',token)
             document.querySelector('.modal').remove()
             loginBtn.remove()
-            document.querySelector('.header').append(createVisitBtn)
+            document.querySelector('.header').append(logOutBtn,createVisitBtn)
+            createInput()
             renderCards()
             cardsChecker()
             document.querySelector('.please-login').remove()
+          }
+          else {
+            alert('Please enter a valid username or password')  
+          }
+           
         }
            
             )
@@ -339,6 +359,7 @@ else {
     
   })
 renderBody()
+
 // fetch(`https://ajax.test-danit.com/api/v2/cards/26754`, {
 //   method: 'DELETE',
 //   headers: {
@@ -346,3 +367,4 @@ renderBody()
 //   },
 // })
 // localStorage.clear()
+
